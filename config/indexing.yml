@@ -1,0 +1,65 @@
+# ─────────────────────────────────────────────
+# config/indexing.yml
+# Configuration for FAISS image index building.
+# All paths are relative to PROJECT_ROOT.
+# ─────────────────────────────────────────────
+
+index:
+  # FAISS index type
+  # IndexFlatIP: exact inner product search (= cosine sim on L2-normalized vectors)
+  # Use IndexIVFFlat for datasets > 500K vectors (approximate but faster)
+  type: IndexFlatIP
+
+  # Embedding dimension — must match BioMedCLIP output (512)
+  embedding_dim: 512
+
+  # Similarity metric
+  # inner_product: equivalent to cosine similarity when vectors are L2-normalized
+  metric: inner_product
+
+  # Output files (relative to PROJECT_ROOT)
+  index_file: src/indexing/faiss_image_index.bin
+  config_file: src/indexing/index_config.json
+
+input:
+  # Image embeddings produced by src/embedding/embedding.py
+  image_embeddings: src/embedding/image_embeddings.npy
+
+  # Text embeddings produced by src/embedding/embedding.py
+  # Not indexed — fetched by row index after image search
+  text_embeddings: src/embedding/text_embeddings.npy
+
+  # Metadata CSV produced by src/embedding/embedding.py
+  # Columns: subject_id, study_id, image_path
+  # Row i here == row i in image_embeddings.npy == row i in text_embeddings.npy
+  metadata: src/embedding/metadata.csv
+
+  # Knowledge base CSV for fetching full report text at retrieval time
+  knowledge_base: data/knowledge_base.csv
+
+memory:
+  # Number of vectors added to FAISS index per chunk
+  # 10000 vectors x 512 dims x 4 bytes = ~20MB per chunk — safe for 8GB M3
+  chunk_size: 10000
+
+  # RAM usage warning threshold (%)
+  # Raised to 88 because macOS baseline on 8GB is ~41-45%
+  ram_limit_percent: 88.0
+
+logging:
+  # Log file location (relative to PROJECT_ROOT)
+  log_file: logs/indexing.log
+
+  # Log level: DEBUG, INFO, WARNING, ERROR
+  level: INFO
+
+  # Whether to also print logs to console
+  console: true
+
+sanity_check:
+  # Run self-retrieval test after building index
+  # Queries index with 3 image vectors and verifies each retrieves itself as top-1
+  run_self_retrieval: true
+
+  # Number of sample vectors to test
+  num_samples: 3

@@ -1,0 +1,13 @@
+{
+  "index_type": "IndexFlatIP",
+  "index_modality": "image",
+  "embedding_dim": 512,
+  "num_vectors": 199214,
+  "embedding_model": "hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224",
+  "similarity": "cosine (inner product on L2-normalized image vectors)",
+  "index_file": "/Users/mh/Desktop/Harshith/rag-rrg/src/indexing/faiss_image_index.bin",
+  "text_embeddings": "/Users/mh/Desktop/Harshith/rag-rrg/src/embedding/text_embeddings.npy",
+  "metadata_file": "/Users/mh/Desktop/Harshith/rag-rrg/src/embedding/metadata.csv",
+  "knowledge_base": "/Users/mh/Desktop/Harshith/rag-rrg/data/knowledge_base.csv",
+  "retrieval_note": "IMAGE index: embed query image \u2192 search \u2192 get top-K row indices \u2192 fetch text_embeddings[indices] + reports for those rows. Row i in this index == row i in image_embeddings.npy == row i in text_embeddings.npy == row i in metadata.csv."
+}
