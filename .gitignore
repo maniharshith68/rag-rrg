@@ -1,0 +1,117 @@
+# ─────────────────────────────────────────────────────────────
+# rag-rrg/.gitignore
+# ─────────────────────────────────────────────────────────────
+
+# ── Secrets — NEVER commit these ─────────────────────────────
+.env
+
+# ── Large binary ML artefacts — too large for git (>100MB) ───
+# Embedding arrays (each ~400MB)
+src/embedding/image_embeddings.npy
+src/embedding/text_embeddings.npy
+
+# FAISS index (~800MB)
+src/indexing/faiss_image_index.bin
+
+# Catch-all for any other large binary files added in future
+*.npy
+*.bin
+*.pt
+*.pth
+*.safetensors
+*.onnx
+*.gguf
+
+# ── MIMIC-CXR dataset — not committed, mounted separately ─────
+data/files/
+data/fulldataset.csv
+data/knowledge_base.csv
+data/test_dataset.csv
+data/fulldataset_post_step1.csv
+data/fulldataset_post_step2.csv
+data/fulldataset_post_step3.csv
+data/mimic_cxr_aug_train.csv
+
+# ── Runtime intermediate files ────────────────────────────────
+src/retrieval/query_vec.npy
+src/retrieval/results.json
+src/generation/caption_result.json
+src/generation/generation_result.json
+
+# ── Generated outputs — large and reproducible ────────────────
+data/generated_reports/
+data/pipeline_results/
+evaluation/
+
+# ── Logs ──────────────────────────────────────────────────────
+logs/
+
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+.installed.cfg
+MANIFEST
+
+# ── Virtual environments ──────────────────────────────────────
+.venv/
+venv/
+ENV/
+env/
+.env.bak
+
+# ── Pytest cache ──────────────────────────────────────────────
+.pytest_cache/
+.cache/
+*.pytest_cache
+
+# ── Coverage ──────────────────────────────────────────────────
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# ── Jupyter notebooks ─────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── macOS ─────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+
+# ── IDEs ──────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+
+# ── HuggingFace cache (can be large, always re-downloadable) ──
+.cache/huggingface/
+
+# ── Temporary files ───────────────────────────────────────────
+tmp/
+temp/
+*.tmp
+*.temp

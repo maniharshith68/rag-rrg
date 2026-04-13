@@ -1,0 +1,43 @@
+# ─────────────────────────────────────────────────────────────
+# RAG Radiology Report Generation — Python dependencies
+# Python 3.11+ required (tested on 3.14.3 / Apple M3)
+#
+# Install locally:
+#     pip install -r requirements.txt
+#
+# Note: faiss-cpu is used for local/CPU environments.
+# On Render (Linux x86_64) faiss-cpu installs correctly via pip.
+# ─────────────────────────────────────────────────────────────
+
+# ── Core ML / embeddings ──────────────────────────────────────
+torch>=2.1.0
+torchvision>=0.16.0
+open_clip_torch>=2.24.0
+Pillow>=10.0.0
+
+# ── Vector search ─────────────────────────────────────────────
+faiss-cpu>=1.7.4
+
+# ── Data handling ─────────────────────────────────────────────
+numpy>=1.26.0
+pandas>=2.1.0
+
+# ── HuggingFace ecosystem ─────────────────────────────────────
+huggingface_hub>=0.21.0
+transformers>=4.39.0
+
+# ── Evaluation metrics ────────────────────────────────────────
+nltk>=3.8.1
+rouge-score>=0.1.2
+bert-score>=0.3.13
+
+# ── API / web service (for Render deployment) ─────────────────
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9
+
+# ── Utilities ─────────────────────────────────────────────────
+python-dotenv>=1.0.0
+pyyaml>=6.0.1
+psutil>=5.9.0
+requests>=2.31.0

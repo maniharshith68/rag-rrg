@@ -1,0 +1,91 @@
+# render.yaml
+# Render deployment configuration for the RAG Radiology Report Generation API.
+# Place at project root: rag-rrg/render.yaml
+#
+# This file is read automatically by Render when you connect your GitHub repo.
+# Do NOT commit secrets here — use Render's dashboard Environment section
+# or mark envVars as sync: false (Render will prompt you to enter the value).
+#
+# Deploy steps (after pushing this file to GitHub):
+#   1. render.com → New → Web Service → connect your GitHub repo
+#   2. Render detects render.yaml and pre-fills all settings
+#   3. Fill in the secret env vars in the Render dashboard
+#   4. Upload large binary files to the mounted disk (see README)
+#   5. Click Deploy
+
+services:
+  - type: web
+    name: rag-rrg-api
+    runtime: python
+
+    # Standard plan = 2GB RAM, 1 vCPU.
+    # Required — the pipeline peaks at ~2.1GB RAM during BioMedCLIP inference.
+    # Starter (512MB) will OOM. Upgrade to Pro (4GB) for headroom.
+    plan: standard
+
+    # Python version — match your local development version as closely as
+    # possible. Render supports 3.11 and 3.12 on standard runtimes.
+    # Python 3.14 (used locally) is not yet available on Render — 3.11 is
+    # the safest choice as it is the most widely tested for torch + faiss.
+    # pythonVersion: "3.11"
+
+    # Build: install all dependencies from requirements.txt
+    buildCommand: pip install -r requirements.txt
+
+    # Start: single uvicorn worker — the subprocess architecture handles
+    # memory isolation internally; multiple workers would multiply RAM usage.
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT --workers 1
+
+    # Health check — Render uses this to decide if the deploy succeeded.
+    # /health returns immediately without touching the pipeline.
+    healthCheckPath: /health
+
+    # Environment variables
+    # sync: false  → Render will prompt you to enter the value in the dashboard.
+    #                Never write actual secrets in this file.
+    # value: "..." → Safe non-secret defaults committed here.
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false           # enter in Render dashboard: gsk_...
+
+      - key: GEMINI_API_KEY
+        sync: false           # enter in Render dashboard: AIza...
+
+      - key: GENERATION_BACKEND
+        value: groq           # "groq" uses Groq first, falls back to Gemini
+
+      - key: GEMINI_MODEL
+        value: gemini-2.0-flash
+
+      - key: HUGGINGFACE_TOKEN
+        sync: false           # enter in Render dashboard: hf_...
+
+      # DATA_MOUNT tells api.py where the persistent disk is mounted.
+      # Must match the mountPath in the disk section below.
+      - key: DATA_MOUNT
+        value: /mnt/rag-data
+
+      # Python output unbuffered — ensures logs appear in Render's log viewer
+      # in real time rather than being held in Python's output buffer.
+      - key: PYTHONUNBUFFERED
+        value: "1"
+
+    # Persistent disk for large binary files that cannot be committed to git:
+    #   image_embeddings.npy    ~400MB
+    #   text_embeddings.npy     ~400MB
+    #   faiss_image_index.bin   ~800MB
+    #   metadata.csv            ~15MB
+    #   knowledge_base.csv      ~80MB  (optional — needed only for report lookup)
+    #
+    # Total: ~1.7GB. 3GB disk gives comfortable headroom.
+    # Cost: $0.25/GB/month = $0.75/month for 3GB.
+    #
+    # After first deploy, upload files via Render Shell:
+    #   Render dashboard → your service → Shell tab → run:
+    #   ls /mnt/rag-data   (verify disk is mounted)
+    #
+    # Then from your local machine use scp or the Render CLI to transfer files.
+    disk:
+      name: rag-data
+      mountPath: /mnt/rag-data
+      sizeGB: 3
