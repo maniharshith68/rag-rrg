@@ -327,8 +327,4 @@ The result is a pipeline that peaks at ~2.15GB RAM usage and returns to ~2.1GB a
 
 ---
 
-## License
-
-This project is for research and educational purposes. The MIMIC-CXR dataset requires credentialed access through PhysioNet and is subject to a Data Use Agreement. See [PhysioNet](https://physionet.org/content/mimic-cxr/) for access requirements.
-
 BioMedCLIP is subject to Microsoft's model license. Groq and Gemini APIs are subject to their respective terms of service.
